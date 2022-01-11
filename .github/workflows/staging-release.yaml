@@ -6,7 +6,7 @@ on:
 
 jobs:
   staging-release-packages-server:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     environment: release
     # Just sync everything to the release server
     steps:
@@ -97,7 +97,7 @@ jobs:
     - name: Sync packages from buckets on S3
       run: |
         mkdir -p packaging/releases
-        # aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_RELEASE }}" packaging/releases/ --no-progress
+        aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_RELEASE }}" packaging/releases/ --no-progress
         aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
