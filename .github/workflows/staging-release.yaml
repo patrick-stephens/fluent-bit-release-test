@@ -13,9 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - run: |
-        find .
-        echo $PWD
+    - name: Setup runner
+      run: |
+        sudo apt-get install debsigs createrepo aptly rsync
       shell: bash
 
     - name: Hashed known hosts value
@@ -39,11 +39,6 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       shell: bash
 
-    - run: |
-        find .
-        echo $PWD
-      shell: bash
-
     - name: Upload to build server
       run: |
         rsync -avz --dry-run packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
@@ -60,10 +55,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - run: |
-        find .
-        echo $PWD
-        sudo apt-get install debsigs createrepo aptly
+    - name: Setup runner
+      run: |
+        sudo apt-get install debsigs createrepo aptly rsync
       shell: bash
 
     - name: Get the version
