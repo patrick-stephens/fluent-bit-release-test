@@ -29,6 +29,10 @@ jobs:
       run: |
         mkdir -p packaging/releases
         aws s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
+      shell: bash
+
+    - name: Upload to build server
+      run: |
         rsync -avz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
       env:
         HOST: ${{ secrets.FLUENTBITIO_HOST }}
