@@ -15,7 +15,7 @@ jobs:
 
     - name: Setup runner
       run: |
-        sudo apt-get install debsigs createrepo aptly rsync
+        sudo apt-get install rsync
       shell: bash
 
     - name: Hashed known hosts value
