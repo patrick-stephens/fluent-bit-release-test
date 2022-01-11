@@ -5,10 +5,11 @@ on:
   workflow_dispatch:
 
 jobs:
+
   staging-release-packages-server:
-    runs-on: ubuntu-18.04
+    name: Sync to the packages server
+    runs-on: ubuntu-18.04 # failures with AWS client on latest
     environment: release
-    # Just sync everything to the release server
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -41,7 +42,7 @@ jobs:
 
     - name: Upload to build server
       run: |
-        rsync -avz --dry-run packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
+        ssh $USERNAME@$HOST mkdir -p /home/$USERNAME/apt
         rsync -avz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
       env:
         HOST: ${{ secrets.FLUENTBITIO_HOST }}
@@ -49,6 +50,7 @@ jobs:
       shell: bash
 
   staging-release-packages-s3:
+    name: Sync to the S3 release bucket
     runs-on: ubuntu-18.04 # no createrepo on more recent runners
     environment: release
     steps:
@@ -76,13 +78,6 @@ jobs:
       with:
         gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 
-    - name: GPG set up RPM keys for signing
-      run: |
-        KEYFILE=$(mktemp)
-        gpg --export -a "${{ steps.import_gpg.outputs.name }}" > $KEYFILE
-        rpm --import $KEYFILE
-        rm -f $KEYFILE
-
     # Download the current release bucket
     # Add everything from staging
     # Sign and set up metadata for it all
@@ -96,6 +91,12 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      shell: bash
+
+    - name: GPG set up keys for signing
+      run: |
+        gpg --export -a "${{ steps.import_gpg.outputs.name }}" > packaging/releases/fluentbit.key
+        rpm --import packaging/releases/fluentbit.key
       shell: bash
 
     - name: Update repo info
