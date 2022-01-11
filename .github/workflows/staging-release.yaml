@@ -34,10 +34,10 @@ jobs:
       run: |
         mkdir -p packaging/releases
         aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
-      shell: bash
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      shell: bash
 
     - run: |
         find .
@@ -46,6 +46,7 @@ jobs:
 
     - name: Upload to build server
       run: |
+        rsync -avz --dry-run packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
         rsync -avz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
       env:
         HOST: ${{ secrets.FLUENTBITIO_HOST }}
@@ -107,13 +108,14 @@ jobs:
       run: |
         VERSION=$(cat packaging/releases/latest-version.txt)
         packaging/update-repos.sh "$VERSION" packaging/releases/
+      env:
+        GPG_KEY: ${{ steps.import_gpg.outputs.name }}
       shell: bash
 
     - name: Sync to release bucket on S3
       run: |
         aws --debug s3 sync packaging/releases/ "s3://${{ secrets.AWS_S3_BUCKET_RELEASE }}" --follow-symlinks --no-progress
       env:
-        GPG_KEY: ${{ steps.import_gpg.outputs.name }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       shell: bash
