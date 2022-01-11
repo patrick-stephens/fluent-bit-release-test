@@ -35,6 +35,9 @@ jobs:
         mkdir -p packaging/releases
         aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
       shell: bash
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - run: |
         find .
@@ -96,7 +99,6 @@ jobs:
         aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_RELEASE }}" packaging/releases/ --no-progress
         aws --debug s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
       env:
-        GPG_KEY: ${{ steps.import_gpg.outputs.name }}
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       shell: bash
