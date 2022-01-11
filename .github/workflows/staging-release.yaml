@@ -7,7 +7,7 @@ on:
 jobs:
 
   staging-release-packages-server:
-    name: Sync to the packages server
+    name: fluentbit.io - upload packages
     runs-on: ubuntu-18.04 # failures with AWS client on latest
     environment: release
     steps:
@@ -50,7 +50,7 @@ jobs:
       shell: bash
 
   staging-release-packages-s3:
-    name: Sync to the S3 release bucket
+    name: S3 - create release
     runs-on: ubuntu-18.04 # no createrepo on more recent runners
     environment: release
     steps:
