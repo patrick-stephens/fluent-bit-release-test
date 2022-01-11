@@ -13,6 +13,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - run: |
+        find .
+        echo $PWD
+      shell: bash
+
     - name: Hashed known hosts value
       id: known_hosts
       run: |
@@ -31,6 +36,11 @@ jobs:
         aws s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
       shell: bash
 
+    - run: |
+        find .
+        echo $PWD
+      shell: bash
+
     - name: Upload to build server
       run: |
         rsync -avz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
@@ -45,6 +55,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+
+    - run: |
+        find .
+        echo $PWD
+      shell: bash
 
     - name: Get the version
       id: get_version
