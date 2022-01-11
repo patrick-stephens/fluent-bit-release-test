@@ -60,6 +60,7 @@ jobs:
     - run: |
         find .
         echo $PWD
+        sudo apt-get install debsigs createrepo aptly
       shell: bash
 
     - name: Get the version
@@ -96,7 +97,6 @@ jobs:
         aws s3 sync "s3://${{ secrets.AWS_S3_BUCKET_STAGING }}" packaging/releases/ --no-progress
         VERSION=$(cat packaging/releases/latest-version.txt)
 
-        sudo apt-get install debsigs createrepo
         packaging/update-repos.sh "$VERSION" packaging/releases/
         aws s3 sync packaging/releases/ "s3://${{ secrets.AWS_S3_BUCKET_RELEASE }}" --follow-symlinks --no-progress
       env:
