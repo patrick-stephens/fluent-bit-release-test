@@ -67,7 +67,7 @@ jobs:
   remove-release-packages-server:
     name: fluentbit.io - remove packages
     needs: remove-release-packages-s3
-    uses: patrick-stephens/fluent-bit-release-test/.github/workflows/call-release-server-sync.yaml@master
+    uses: patrick-stephens/fluent-bit-release-test/.github/workflows/call-release-server-sync.yaml@main
     with:
       environment: release
     secrets:
