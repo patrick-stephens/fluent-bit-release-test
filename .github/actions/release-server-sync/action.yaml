@@ -1,6 +1,6 @@
----
 name: Composite action to sync release to server
 description: Carry out all the tasks to sync from a bucket to the release server.
+
 inputs:
   bucket:
     description: The name of the S3 (US-East) bucket to sync packages from.
@@ -20,6 +20,7 @@ inputs:
   server_key:
     description: The SSH key to use for authentication.
     required: true
+
 runs:
   using: "composite"
   steps:
@@ -35,6 +36,7 @@ runs:
       echo ::set-output name=OUTPUT::$OUTPUT
     env:
       SERVER_HOSTNAME: ${{ inputs.server_hostname }}
+    shell: bash
 
   - name: Install SSH Key
     uses: shimataro/ssh-key-action@v2

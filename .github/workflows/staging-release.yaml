@@ -88,7 +88,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - uses: .github/composite/release-server-sync
+    - uses: ./.github/actions/release-server-sync
       with:
         bucket: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
         access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
