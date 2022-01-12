@@ -67,13 +67,16 @@ jobs:
   remove-release-packages-server:
     name: fluentbit.io - remove packages
     needs: remove-release-packages-s3
-    uses: patrick-stephens/fluent-bit-release-test/.github/workflows/call-release-server-sync.yaml@main
-    with:
-      environment: release
-    secrets:
-      bucket: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
-      access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      server_hostname: ${{ secrets.FLUENTBITIO_HOST }})
-      server_username: ${{ secrets.FLUENTBITIO_USERNAME }}
-      server_key: ${{ secrets.FLUENTBITIO_SSHKEY }}
+    runs-on: ubuntu-18.04 # failures with AWS client on latest
+    environment: release
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - uses: .github/composite/release-server-sync
+      with:
+        bucket: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
+        access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        server_hostname: ${{ secrets.FLUENTBITIO_HOST }})
+        server_username: ${{ secrets.FLUENTBITIO_USERNAME }}
+        server_key: ${{ secrets.FLUENTBITIO_SSHKEY }}
