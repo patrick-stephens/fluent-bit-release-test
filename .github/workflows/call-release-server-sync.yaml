@@ -44,8 +44,10 @@ jobs:
     - name: Hashed known hosts value
       id: known_hosts
       run: |
-          OUTPUT=$(ssh-keyscan -H ${{ secrets.server_hostname }})
-          echo ::set-output name=OUTPUT::$OUTPUT
+        OUTPUT=$(ssh-keyscan -H "$SERVER_HOSTNAME")
+        echo ::set-output name=OUTPUT::$OUTPUT
+      env:
+        SERVER_HOSTNAME: ${{ secrets.server_hostname }}
 
     - name: Install SSH Key
       uses: shimataro/ssh-key-action@v2
