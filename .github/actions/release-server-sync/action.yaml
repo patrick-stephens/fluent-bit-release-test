@@ -32,10 +32,8 @@ runs:
   - name: Hashed known hosts value
     id: known_hosts
     run: |
-      OUTPUT=$(ssh-keyscan -H "$SERVER_HOSTNAME")
+      OUTPUT=$(ssh-keyscan -H ${{ inputs.server_hostname }})
       echo ::set-output name=OUTPUT::$OUTPUT
-    env:
-      SERVER_HOSTNAME: ${{ inputs.server_hostname }}
     shell: bash
 
   - name: Install SSH Key

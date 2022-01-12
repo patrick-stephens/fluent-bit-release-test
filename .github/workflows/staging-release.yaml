@@ -93,6 +93,6 @@ jobs:
         bucket: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
         access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        server_hostname: ${{ secrets.FLUENTBITIO_HOST }})
+        server_hostname: ${{ secrets.FLUENTBITIO_HOST }}
         server_username: ${{ secrets.FLUENTBITIO_USERNAME }}
         server_key: ${{ secrets.FLUENTBITIO_SSHKEY }}
