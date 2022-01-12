@@ -54,11 +54,17 @@ runs:
 
   - name: Upload to build server
     run: |
-      ssh $USERNAME@$HOST mkdir -p /home/$USERNAME/s3-release
-      rsync --include="*/" --include="*.rpm" --include="*.deb" --exclude="*" -amvz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/s3-release
+      ssh $USERNAME@$HOST mkdir -p /home/$USERNAME/apt
+      rsync --include="*/" --include="*.rpm" --include="*.deb" --exclude="*" -amvz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
     env:
       HOST: ${{ inputs.server_hostname }}
       USERNAME: ${{ inputs.server_username }}
     shell: bash
 
   # We could also automate the final step here eventually to get the packages "live"
+  # - name: Publish on build server
+  #   run: |
+  #     ssh $USERNAME@$HOST /bin/bash /home/$USERNAME/publish_all.sh "$VERSION"
+  #   env:
+  #     VERSION: ${{ inputs.version }}
+  #   shell: bash
