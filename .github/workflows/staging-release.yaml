@@ -81,47 +81,16 @@ jobs:
   # The assumption being we would remove this step eventually anyway.
   staging-release-packages-server:
     name: fluentbit.io - upload packages
-    runs-on: ubuntu-18.04 # failures with AWS client on latest
-    environment: release
     # Not required if using the staging bucket
     needs: staging-release-packages-s3
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup runner
-      run: |
-        sudo apt-get install rsync
-      shell: bash
-
-    - name: Hashed known hosts value
-      id: known_hosts
-      run: |
-          OUTPUT=$(ssh-keyscan -H ${{ secrets.FLUENTBITIO_HOST }})
-          echo ::set-output name=OUTPUT::$OUTPUT
-
-    - name: Install SSH Key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.FLUENTBITIO_SSHKEY }}
-        known_hosts: ${{ steps.known_hosts.outputs.OUTPUT }}
-
-    - name: Sync packages from release bucket on S3
-      run: |
-        mkdir -p packaging/releases
-        aws s3 sync "s3://$BUCKET" packaging/releases/ --no-progress
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        # Replace with staging bucket if required later
-        BUCKET: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
-      shell: bash
-
-    - name: Upload to build server
-      run: |
-        ssh $USERNAME@$HOST mkdir -p /home/$USERNAME/s3-release
-        rsync --include="*/" --include="*.rpm" --include="*.deb" --exclude="*" -amvz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/s3-release
-      env:
-        HOST: ${{ secrets.FLUENTBITIO_HOST }}
-        USERNAME: ${{ secrets.FLUENTBITIO_USERNAME }}
-      shell: bash
+    uses: patrick-stephens/fluent-bit-release-test/.github/workflows/call-release-server-sync.yaml@master
+    with:
+      environment: release
+    secrets:
+      # Replace with staging bucket for option 2
+      bucket: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
+      access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      server_hostname: ${{ secrets.FLUENTBITIO_HOST }})
+      server_username: ${{ secrets.FLUENTBITIO_USERNAME }}
+      server_key: ${{ secrets.FLUENTBITIO_SSHKEY }}
