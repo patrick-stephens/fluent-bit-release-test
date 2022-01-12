@@ -53,13 +53,15 @@ jobs:
         rpm --import packaging/releases/fluentbit.key
       shell: bash
 
-    - name: Update repo info
+    - name: Update repo info and remove any staging details
       run: |
+        rm -f packaging/releases/*.repo
         VERSION=$(cat packaging/releases/latest-version.txt)
         packaging/update-repos.sh "$VERSION" packaging/releases/
         rm -f packaging/releases/latest-version.txt
       env:
         GPG_KEY: ${{ steps.import_gpg.outputs.name }}
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_RELEASE }}
       shell: bash
 
     - name: Sync to release bucket on S3
@@ -104,7 +106,7 @@ jobs:
         key: ${{ secrets.FLUENTBITIO_SSHKEY }}
         known_hosts: ${{ steps.known_hosts.outputs.OUTPUT }}
 
-    - name: Sync packages from staging on S3
+    - name: Sync packages from release bucket on S3
       run: |
         mkdir -p packaging/releases
         aws s3 sync "s3://$BUCKET" packaging/releases/ --no-progress
@@ -117,8 +119,8 @@ jobs:
 
     - name: Upload to build server
       run: |
-        ssh $USERNAME@$HOST mkdir -p /home/$USERNAME/apt
-        rsync -avz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/apt
+        ssh $USERNAME@$HOST mkdir -p /home/$USERNAME/s3-release
+        rsync --include="*/" --include="*.rpm" --include="*.deb" --exclude="*" -amvz packaging/releases/ $USERNAME@$HOST:/home/$USERNAME/s3-release
       env:
         HOST: ${{ secrets.FLUENTBITIO_HOST }}
         USERNAME: ${{ secrets.FLUENTBITIO_USERNAME }}
