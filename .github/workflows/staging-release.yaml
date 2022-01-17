@@ -117,7 +117,7 @@ jobs:
     steps:
       - name: Check the image exists
         run: |
-          docker pull "docker://$STAGING_IMAGE_NAME:$TAG"
+          docker pull "$STAGING_IMAGE_NAME:$TAG"
         env:
           STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
           TAG: ${{ matrix.tag }}
