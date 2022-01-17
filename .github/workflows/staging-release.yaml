@@ -109,6 +109,9 @@ jobs:
   staging-release-images:
     runs-on: ubuntu-latest
     environment: release
+    env:
+      # STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
+      STAGING_IMAGE_NAME: ghcr.io/fluent/fluent-bit
     strategy:
       fail-fast: false
       matrix:
@@ -119,8 +122,6 @@ jobs:
         run: |
           docker pull "$STAGING_IMAGE_NAME:$TAG"
         env:
-          STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}
-          # STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
           TAG: ${{ matrix.tag }}
         shell: bash
 
@@ -141,8 +142,6 @@ jobs:
               "docker://$STAGING_IMAGE_NAME:$TAG" \
               "docker://$RELEASE_IMAGE_NAME:$TAG"
         env:
-          STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}
-          # STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
           RELEASE_IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}
           RELEASE_CREDS: ${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_TOKEN }}
           GPG_KEY: ${{ steps.import_gpg.outputs.name }}
@@ -160,8 +159,6 @@ jobs:
               "docker://$STAGING_IMAGE_NAME:$TAG" \
               "docker://$RELEASE_IMAGE_NAME:$TAG"
         env:
-          STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}
-          # STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
           RELEASE_IMAGE_NAME: ghcr.io/${{ github.repository }}
           RELEASE_CREDS: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
           GPG_KEY: ${{ steps.import_gpg.outputs.name }}
