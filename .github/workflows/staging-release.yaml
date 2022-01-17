@@ -121,6 +121,8 @@ jobs:
       - name: Check the image exists
         run: |
           docker pull "$STAGING_IMAGE_NAME:$TAG"
+          sudo mkdir -p /var/lib/containers/sigstore/
+          sudo chmod -R a+w /var/lib/containers/sigstore/
         env:
           TAG: ${{ matrix.tag }}
         shell: bash
@@ -133,7 +135,7 @@ jobs:
 
       - name: Promote and sign container images from staging to Dockerhub
         run: |
-          sudo skopeo \
+          skopeo \
               copy \
               --all --remove-signatures \
               --sign-by "$GPG_KEY" \
@@ -150,7 +152,7 @@ jobs:
 
       - name: Promote and sign container images from staging to GHCR.io
         run: |
-          sudo skopeo \
+          skopeo \
               copy \
               --all --remove-signatures \
               --sign-by "$GPG_KEY" \
