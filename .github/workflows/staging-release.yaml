@@ -121,8 +121,6 @@ jobs:
       - name: Check the image exists
         run: |
           docker pull "$STAGING_IMAGE_NAME:$TAG"
-          sudo mkdir -p /var/lib/containers/sigstore/
-          sudo chmod -R a+w /var/lib/containers/sigstore/
         env:
           TAG: ${{ matrix.tag }}
         shell: bash
@@ -133,11 +131,17 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 
+      - name: Setup skopeo for rootless
+        run: |
+          sudo mkdir -p /var/lib/containers/sigstore/
+          sudo chmod -R a+w /var/lib/containers/sigstore/
+        shell: bash
+
       - name: Promote and sign container images from staging to Dockerhub
         run: |
           skopeo \
               copy \
-              --all --remove-signatures \
+              --all \
               --sign-by "$GPG_KEY" \
               --src-no-creds \
               --dest-creds "$RELEASE_CREDS" \
@@ -154,7 +158,7 @@ jobs:
         run: |
           skopeo \
               copy \
-              --all --remove-signatures \
+              --all \
               --sign-by "$GPG_KEY" \
               --src-no-creds \
               --dest-creds "$RELEASE_CREDS" \
