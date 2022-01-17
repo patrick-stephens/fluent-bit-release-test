@@ -173,24 +173,8 @@ jobs:
           DOCKER_CONTENT_TRUST: 1
         shell: bash
 
-      - name: Cosign keyless signing using Rektor public transparency log
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance, and records it to the
-        # sigstore community Rekor transparency log.
-        #
-        # We use recursive signing on the manifest to cover all the images.
-        run: |
-          cosign sign --recursive \
-            -a "repo=${{ github.repository }}" \
-            -a "workflow=${{ github.workflow }}" \
-            -a "release=${{ github.event.inputs.version }}" \
-            "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}"
-        shell: bash
-        # Ensure we move on to key-based signing as well
-        continue-on-error: true
-        env:
-          COSIGN_EXPERIMENTAL: "true"
+      - name: Install cosign
+        uses: sigstore/cosign-installer@main
 
       - name: Cosign with a key
         # Only run if we have a key defined
@@ -209,3 +193,20 @@ jobs:
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.cosign_private_key }}
           COSIGN_PASSWORD: ${{ secrets.cosign_private_key_password }} # optional
+
+      - name: Cosign keyless signing using Rektor public transparency log
+        # This step uses the identity token to provision an ephemeral certificate
+        # against the sigstore community Fulcio instance, and records it to the
+        # sigstore community Rekor transparency log.
+        #
+        # We use recursive signing on the manifest to cover all the images.
+        run: |
+          cosign sign --recursive \
+            -a "repo=${{ github.repository }}" \
+            -a "workflow=${{ github.workflow }}" \
+            -a "release=${{ github.event.inputs.version }}" \
+            "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}"
+        shell: bash
+        env:
+          COSIGN_EXPERIMENTAL: "true"
