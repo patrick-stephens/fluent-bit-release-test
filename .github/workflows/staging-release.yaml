@@ -119,6 +119,7 @@ jobs:
         tag: [ "${{ github.event.inputs.version }}", "latest" ] #, "${{ github.event.inputs.version }}-debug", "latest-debug" ]
     steps:
       - name: Check the image exists
+        # Primarily because the skopeo errors are hard to parse and non-obvious
         run: |
           docker pull "$STAGING_IMAGE_NAME:$TAG"
         env:
@@ -201,7 +202,7 @@ jobs:
             "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
             "ghcr.io/${{ github.repository }}:latest" \
             "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest"
           rm -f /tmp/my_cosign.key
         shell: bash
         env:
@@ -222,7 +223,7 @@ jobs:
             "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
             "ghcr.io/${{ github.repository }}:latest" \
             "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest"
         shell: bash
         env:
           COSIGN_EXPERIMENTAL: "true"
