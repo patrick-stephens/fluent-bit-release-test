@@ -114,36 +114,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # All the release registries we support and the tags we want to release
-        release-image: [ "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}", "ghcr.io/${{ github.repository }}" ]
+        # All the explicit tags we want to release
         tag: [ "${{ inputs.version }}", "latest", "${{ inputs.version }}-debug", "latest-debug" ]
-
-        # Attach credentials to each registry
-        include:
-          - release-image: "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}"
-            release-creds: "${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_TOKEN }}"
-
-          - release-image: "ghcr.io/${{ github.repository }}"
-            release-creds: "${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}"
     steps:
-      - name: Promote container images from staging to release if no GPG key
-        if: ${{ ! secrets.GPG_PRIVATE_KEY }}
-        run: |
-          skopeo \
-              copy \
-              --all \
-              --src-no-creds \
-              --dest-creds "$RELEASE_CREDS" \
-              "docker://$STAGING_IMAGE_NAME:$TAG" \
-              "docker://$RELEASE_IMAGE_NAME:$TAG"
-        env:
-          STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
-          RELEASE_IMAGE_NAME: ${{ matrix.release-image }}
-          RELEASE_CREDS: ${{ matrix.release-creds }}
-          VERSION: ${{ inputs.version }}
-          TAG: ${{ matrix.tag }}
-        shell: bash
-
       - name: Import GPG key for signing
         if: ${{ secrets.GPG_PRIVATE_KEY }}
         id: import_gpg
@@ -151,8 +124,7 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 
-      - name: Promote and sign container images from staging to release
-        if: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Promote and sign container images from staging to Dockerhub
         run: |
           skopeo \
               copy \
@@ -164,8 +136,27 @@ jobs:
               "docker://$RELEASE_IMAGE_NAME:$TAG"
         env:
           STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
-          RELEASE_IMAGE_NAME: ${{ matrix.release-image }}
-          RELEASE_CREDS: ${{ matrix.release-creds }}
+          RELEASE_IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}
+          RELEASE_CREDS: ${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_TOKEN }}
+          GPG_KEY: ${{ steps.import_gpg.outputs.name }}
+          VERSION: ${{ inputs.version }}
+          TAG: ${{ matrix.tag }}
+        shell: bash
+
+      - name: Promote and sign container images from staging to GHCR.io
+        run: |
+          skopeo \
+              copy \
+              --all --remove-signatures \
+              --sign-by "$GPG_KEY" \
+              --src-no-creds \
+              --dest-creds "$RELEASE_CREDS" \
+              "docker://$STAGING_IMAGE_NAME:$TAG" \
+              "docker://$RELEASE_IMAGE_NAME:$TAG"
+        env:
+          STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
+          RELEASE_IMAGE_NAME: ghcr.io/${{ github.repository }}
+          RELEASE_CREDS: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
           GPG_KEY: ${{ steps.import_gpg.outputs.name }}
           VERSION: ${{ inputs.version }}
           TAG: ${{ matrix.tag }}
