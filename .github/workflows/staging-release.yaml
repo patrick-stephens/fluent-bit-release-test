@@ -133,7 +133,7 @@ jobs:
 
       - name: Promote and sign container images from staging to Dockerhub
         run: |
-          skopeo \
+          sudo skopeo \
               copy \
               --all --remove-signatures \
               --sign-by "$GPG_KEY" \
@@ -150,7 +150,7 @@ jobs:
 
       - name: Promote and sign container images from staging to GHCR.io
         run: |
-          skopeo \
+          sudo skopeo \
               copy \
               --all --remove-signatures \
               --sign-by "$GPG_KEY" \
