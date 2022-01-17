@@ -118,7 +118,6 @@ jobs:
         tag: [ "${{ inputs.version }}", "latest", "${{ inputs.version }}-debug", "latest-debug" ]
     steps:
       - name: Import GPG key for signing
-        if: ${{ secrets.GPG_PRIVATE_KEY }}
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
         with:
