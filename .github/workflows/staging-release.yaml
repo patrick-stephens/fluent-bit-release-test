@@ -116,7 +116,7 @@ jobs:
       fail-fast: false
       matrix:
         # All the explicit tags we want to release
-        tag: [ "${{ github.event.inputs.version }}", "latest", "${{ github.event.inputs.version }}-debug", "latest-debug" ]
+        tag: [ "${{ github.event.inputs.version }}", "latest" ] #, "${{ github.event.inputs.version }}-debug", "latest-debug" ]
     steps:
       - name: Check the image exists
         run: |
@@ -173,6 +173,18 @@ jobs:
           DOCKER_CONTENT_TRUST: 1
         shell: bash
 
+  staging-release-images-sign:
+    name: Sign container image manifests
+    permissions:
+      contents: read
+      packages: write
+      # This is used to complete the identity challenge
+      # with sigstore/fulcio when running outside of PRs.
+      id-token: write
+    runs-on: ubuntu-latest
+    environment: release
+    needs: staging-release-images
+    steps:
       - name: Install cosign
         uses: sigstore/cosign-installer@main
 
@@ -187,7 +199,9 @@ jobs:
             -a "workflow=${{ github.workflow }}" \
             -a "release=${{ github.event.inputs.version }}" \
             "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}"
+            "ghcr.io/${{ github.repository }}:latest" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest
           rm -f /tmp/my_cosign.key
         shell: bash
         env:
@@ -206,7 +220,9 @@ jobs:
             -a "workflow=${{ github.workflow }}" \
             -a "release=${{ github.event.inputs.version }}" \
             "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}"
+            "ghcr.io/${{ github.repository }}:latest" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest
         shell: bash
         env:
           COSIGN_EXPERIMENTAL: "true"
