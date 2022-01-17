@@ -61,9 +61,7 @@ jobs:
       run: |
         rm -f packaging/releases/*.repo
         LATEST_VERSION=$(cat packaging/releases/latest-version.txt)
-        if [[ "$LATEST_VERSION" != "$VERSION" ]];
-          echo "$LATEST_VERSION != $VERSION"
-        fi
+        [[ "$LATEST_VERSION" != "$VERSION" ]] && echo "$LATEST_VERSION != $VERSION"
         packaging/update-repos.sh "$VERSION" packaging/releases/
         rm -f packaging/releases/latest-version.txt
       env:
@@ -115,7 +113,7 @@ jobs:
       fail-fast: false
       matrix:
         # All the explicit tags we want to release
-        tag: [ "${{ inputs.version }}", "latest", "${{ inputs.version }}-debug", "latest-debug" ]
+        tag: [ "${{ github.event.inputs.version }}", "latest", "${{ github.event.inputs.version }}-debug", "latest-debug" ]
     steps:
       - name: Import GPG key for signing
         id: import_gpg
