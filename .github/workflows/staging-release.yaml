@@ -212,9 +212,9 @@ jobs:
             -a "repo=${{ github.repository }}" \
             -a "workflow=${{ github.workflow }}" \
             -a "release=${{ github.event.inputs.version }}" \
-            "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
+            "ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }}" \
             "ghcr.io/${{ github.repository }}:latest" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ github.event.inputs.version }}" \
             "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest"
           rm -f /tmp/my_cosign.key
         shell: bash
@@ -233,9 +233,9 @@ jobs:
             -a "repo=${{ github.repository }}" \
             -a "workflow=${{ github.workflow }}" \
             -a "release=${{ github.event.inputs.version }}" \
-            "ghcr.io/${{ github.repository }}:${{ matrix.tag }}" \
+            "ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }}" \
             "ghcr.io/${{ github.repository }}:latest" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ matrix.tag }}" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ github.event.inputs.version }}" \
             "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest"
         shell: bash
         env:
