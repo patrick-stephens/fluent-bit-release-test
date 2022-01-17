@@ -115,6 +115,14 @@ jobs:
         # All the explicit tags we want to release
         tag: [ "${{ github.event.inputs.version }}", "latest", "${{ github.event.inputs.version }}-debug", "latest-debug" ]
     steps:
+      - name: Check the image exists
+        run: |
+          docker pull "docker://$STAGING_IMAGE_NAME:$TAG"
+        env:
+          STAGING_IMAGE_NAME: ghcr.io/${{ github.repository }}/staging
+          TAG: ${{ matrix.tag }}
+        shell: bash
+
       - name: Import GPG key for signing
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v4
@@ -136,7 +144,6 @@ jobs:
           RELEASE_IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}
           RELEASE_CREDS: ${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_TOKEN }}
           GPG_KEY: ${{ steps.import_gpg.outputs.name }}
-          VERSION: ${{ inputs.version }}
           TAG: ${{ matrix.tag }}
         shell: bash
 
@@ -155,6 +162,5 @@ jobs:
           RELEASE_IMAGE_NAME: ghcr.io/${{ github.repository }}
           RELEASE_CREDS: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
           GPG_KEY: ${{ steps.import_gpg.outputs.name }}
-          VERSION: ${{ inputs.version }}
           TAG: ${{ matrix.tag }}
         shell: bash
