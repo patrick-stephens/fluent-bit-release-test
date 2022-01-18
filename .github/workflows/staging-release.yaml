@@ -118,32 +118,21 @@ jobs:
         # All the explicit tags we want to release
         tag: [ "${{ github.event.inputs.version }}", "latest" ] #, "${{ github.event.inputs.version }}-debug", "latest-debug" ]
     steps:
-      - name: Check the image exists
         # Primarily because the skopeo errors are hard to parse and non-obvious
+      - name: Check the image exists
         run: |
           docker pull "$STAGING_IMAGE_NAME:$TAG"
         env:
           TAG: ${{ matrix.tag }}
         shell: bash
 
-      - name: Import GPG key for signing
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v4
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-
-      - name: Setup skopeo for rootless
+      # Use the container to prevent any rootless issues and we do not need to use GPG signing as DockerHub does not support it.
+      - name: Promote container images from staging to Dockerhub
         run: |
-          sudo mkdir -p /var/lib/containers/sigstore/
-          sudo chmod -R a+w /var/lib/containers/sigstore/
-        shell: bash
-
-      - name: Promote and sign container images from staging to Dockerhub
-        run: |
-          skopeo \
+          docker run --rm  \
+            quay.io/skopeo/stable:latest \
               copy \
               --all \
-              --sign-by "$GPG_KEY" \
               --src-no-creds \
               --dest-creds "$RELEASE_CREDS" \
               "docker://$STAGING_IMAGE_NAME:$TAG" \
@@ -151,17 +140,15 @@ jobs:
         env:
           RELEASE_IMAGE_NAME: docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}
           RELEASE_CREDS: ${{ secrets.DOCKERHUB_USERNAME }}:${{ secrets.DOCKERHUB_TOKEN }}
-          GPG_KEY: ${{ steps.import_gpg.outputs.name }}
           TAG: ${{ matrix.tag }}
-          DOCKER_CONTENT_TRUST: 1
         shell: bash
 
-      - name: Promote and sign container images from staging to GHCR.io
+      - name: Promote container images from staging to GHCR.io
         run: |
-          skopeo \
+          docker run --rm  \
+            quay.io/skopeo/stable:latest \
               copy \
               --all \
-              --sign-by "$GPG_KEY" \
               --src-no-creds \
               --dest-creds "$RELEASE_CREDS" \
               "docker://$STAGING_IMAGE_NAME:$TAG" \
@@ -169,9 +156,7 @@ jobs:
         env:
           RELEASE_IMAGE_NAME: ghcr.io/${{ github.repository }}
           RELEASE_CREDS: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
-          GPG_KEY: ${{ steps.import_gpg.outputs.name }}
           TAG: ${{ matrix.tag }}
-          DOCKER_CONTENT_TRUST: 1
         shell: bash
 
   staging-release-images-sign:
@@ -213,9 +198,13 @@ jobs:
             -a "workflow=${{ github.workflow }}" \
             -a "release=${{ github.event.inputs.version }}" \
             "ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }}" \
+            "ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }}-debug" \
             "ghcr.io/${{ github.repository }}:latest" \
+            "ghcr.io/${{ github.repository }}:latest-debug" \
             "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ github.event.inputs.version }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest"
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ github.event.inputs.version }}-debug" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest-debug"
           rm -f /tmp/my_cosign.key
         shell: bash
         env:
@@ -234,9 +223,13 @@ jobs:
             -a "workflow=${{ github.workflow }}" \
             -a "release=${{ github.event.inputs.version }}" \
             "ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }}" \
+            "ghcr.io/${{ github.repository }}:${{ github.event.inputs.version }}-debug" \
             "ghcr.io/${{ github.repository }}:latest" \
+            "ghcr.io/${{ github.repository }}:latest-debug" \
             "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ github.event.inputs.version }}" \
-            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest"
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:${{ github.event.inputs.version }}-debug" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest" \
+            "docker.io/${{ secrets.DOCKERHUB_ORGANIZATION }}:latest-debug"
         shell: bash
         env:
           COSIGN_EXPERIMENTAL: "true"
