@@ -38,12 +38,12 @@ jobs:
         $fluentbit=Start-Process -PassThru -NoNewWindow -FilePath "bin\fluent-bit.exe" -ArgumentList "-i", "dummy", "-o", "stdout"
         Start-Sleep -s 15
         if ($fluentbit.HasExited) {
-          echo "Fluent Bit exited prematurely"
+          Write-Host "Fluent Bit exited prematurely"
           exit 1
         }
         Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
-        echo "Fluent Bit exited correctly"
+        Write-Host "Fluent Bit exited correctly"
       shell: pwsh
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
 
@@ -93,12 +93,12 @@ jobs:
         $fluentbit=Start-Process -PassThru -NoNewWindow -FilePath "bin\fluent-bit.exe" -ArgumentList "-c", "conf\fluent-bit.conf"
         Start-Sleep -s 15
         if ($fluentbit.HasExited) {
-          echo "Fluent Bit exited prematurely"
+          Write-Host "Fluent Bit exited prematurely"
           exit 1
         }
         Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
-        echo "Fluent Bit exited correctly"
+        Write-Host "Fluent Bit exited correctly"
       shell: pwsh
       working-directory: C:\fluent-bit
 
