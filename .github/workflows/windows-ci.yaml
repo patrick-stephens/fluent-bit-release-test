@@ -25,7 +25,7 @@ jobs:
 
     - name: Install zip locally to test
       run: |
-        Expand-Archive td-agent-bit-1.8.11-win64.zip C:\temp\fluent-bit.zip
+        Expand-Archive C:\temp\fluent-bit.zip
       shell: powershell
 
     - name: Run zip version with simple config
