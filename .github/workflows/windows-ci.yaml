@@ -38,7 +38,7 @@ jobs:
           echo "Fluent Bit exited prematurely"
           exit 1
         }
-        Stop-Process -Force -InputObject $p
+        Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
       shell: powershell
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
@@ -52,7 +52,7 @@ jobs:
           echo "Fluent Bit exited prematurely"
           exit 1
         }
-        Stop-Process -Force -InputObject $p
+        Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
       shell: powershell
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
