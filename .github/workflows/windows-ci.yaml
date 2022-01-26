@@ -25,7 +25,7 @@ jobs:
 
     - name: Install zip locally to test
       run: |
-        Expand-Archive -PassThru -Force -LiteralPath 'C:\temp\fluent-bit.zip' -DestinationPath "C:\temp"
+        Expand-Archive -Force -LiteralPath 'C:\temp\fluent-bit.zip' -DestinationPath "C:\temp"
       shell: powershell
 
     - name: Run zip version with simple config
