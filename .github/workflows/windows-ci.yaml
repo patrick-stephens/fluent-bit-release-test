@@ -13,9 +13,6 @@ jobs:
     steps:
     - name: Info
       run: $PSVersionTable.PSVersion
-      shell: powershell
-    - name: Info PWSH
-      run: $PSVersionTable.PSVersion
       shell: pwsh
 
     - name: Checkout repository
@@ -25,7 +22,7 @@ jobs:
       run: |
         Invoke-WebRequest -Uri $Env:EXE_SOURCE -OutFile fluent-bit.exe
         Invoke-WebRequest -Uri $Env:ZIP_SOURCE -OutFile fluent-bit.zip
-      shell: powershell
+      shell: pwsh
       env:
         EXE_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.exe
         ZIP_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.zip
@@ -33,8 +30,8 @@ jobs:
     - name: Extract zip locally to test
       # Will end up in .\fluent-bit\td-agent-bit-<version>-win64\
       run: |
-        Expand-Archive -Force -Path "fluent-bit.zip"
-      shell: powershell
+        Expand-Archive -PassThru -Force -Path "fluent-bit.zip"
+      shell: pwsh
 
     - name: Run zip version with simple config
       timeout-minutes: 1
@@ -48,7 +45,7 @@ jobs:
         Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
         echo "Fluent Bit exited correctly"
-      shell: powershell
+      shell: pwsh
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
 
     - name: Run zip version with default config
@@ -64,5 +61,5 @@ jobs:
         Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
         echo "Fluent Bit exited correctly"
-      shell: powershell
+      shell: pwsh
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
