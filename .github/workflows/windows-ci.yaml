@@ -40,6 +40,7 @@ jobs:
         }
         Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
+        echo "Fluent Bit exited correctly"
       shell: powershell
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
 
@@ -54,5 +55,6 @@ jobs:
         }
         Stop-Process -Force -InputObject $fluentbit
         Get-Process | Where-Object {$_.HasExited}
+        echo "Fluent Bit exited correctly"
       shell: powershell
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
