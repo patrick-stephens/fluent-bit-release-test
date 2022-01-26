@@ -51,8 +51,6 @@ jobs:
       timeout-minutes: 5
       # Silent install accepting all defaults
       run: |
-        $startExe = New-Object System.Diagnostics.ProcessStartInfo -Args "fluent-bit-installer.exe"
-        $startExe.verbs
         Start-Process -NoNewWindow -FilePath "fluent-bit-installer.exe" -ArgumentList "/S", "/D=C:\fluent-bit"
       shell: pwsh
 
@@ -69,8 +67,8 @@ jobs:
       # Default config prior to 1.9 is for Linux so will fail
       # Only for 1.8 or earlier
       run: |
-        wget https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/fluent-bit-win32.conf -OutFile "conf\fluent-bit.conf"
-        wget https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/fluent-bit-win32.conf -OutFile "C:\fluent-bit\conf\fluent-bit.conf"
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/fluent-bit-win32.conf -OutFile "conf\fluent-bit.conf"
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/fluent/fluent-bit/master/conf/fluent-bit-win32.conf -OutFile "C:\fluent-bit\conf\fluent-bit.conf"
       shell: pwsh
       working-directory: fluent-bit\td-agent-bit-1.8.11-win64
 
