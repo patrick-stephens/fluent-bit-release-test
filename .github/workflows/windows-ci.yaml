@@ -16,8 +16,8 @@ jobs:
 
     - name: Download packages locally
       run: |
-        Invoke-WebRequest -Uri $EXE_SOURCE -OutFile C:\temp\fluent-bit.exe
-        Invoke-WebRequest -Uri $ZIP_SOURCE -OutFile C:\temp\fluent-bit.zip
+        Invoke-WebRequest -Uri $Env:EXE_SOURCE -OutFile C:\temp\fluent-bit.exe
+        Invoke-WebRequest -Uri $Env:ZIP_SOURCE -OutFile C:\temp\fluent-bit.zip
       shell: powershell
       env:
         EXE_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.exe
