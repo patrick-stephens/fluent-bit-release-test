@@ -11,6 +11,13 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Info
+      run: $PSVersionTable.PSVersion
+      shell: powershell
+    - name: Info PWSH
+      run: $PSVersionTable.PSVersion
+      shell: pwsh
+
     - name: Checkout repository
       uses: actions/checkout@v2
 
