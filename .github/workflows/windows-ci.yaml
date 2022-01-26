@@ -9,8 +9,6 @@ jobs:
   call-test-windows-packaging:
     name: Windows package tests
     runs-on: windows-latest
-    env:
-      VERSION: 1.8.11
     steps:
     - name: Info
       run: $PSVersionTable.PSVersion
@@ -25,8 +23,8 @@ jobs:
         Invoke-WebRequest -Uri $Env:ZIP_SOURCE -OutFile fluent-bit.zip
       shell: pwsh
       env:
-        EXE_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-$VERSION-win64.exe
-        ZIP_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-$VERSION-win64.zip
+        EXE_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.exe
+        ZIP_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.zip
 
     - name: Extract zip locally to test
       # Will end up in .\fluent-bit\td-agent-bit-<version>-win64\
@@ -47,7 +45,7 @@ jobs:
         Get-Process | Where-Object {$_.HasExited}
         echo "Fluent Bit exited correctly"
       shell: pwsh
-      working-directory: fluent-bit\td-agent-bit-$VERSION-win64
+      working-directory: fluent-bit\td-agent-bit-1.8.11-win64
 
     - name: Run zip version with default config
       # Default config prior to 1.9 is for Linux so will fail
@@ -64,7 +62,7 @@ jobs:
         Get-Process | Where-Object {$_.HasExited}
         echo "Fluent Bit exited correctly"
       shell: pwsh
-      working-directory: fluent-bit\td-agent-bit-$VERSION-win64
+      working-directory: fluent-bit\td-agent-bit-1.8.11-win64
 
     - name: Run executable installer
       timeout-minutes: 5
@@ -111,4 +109,24 @@ jobs:
 
     - name: Verify we have the new service
       run: Get-CimInstance -ClassName Win32_Service -Filter "Name='fluentbit'"
+      shell: pwsh
+
+    - name: Start the service if not running
+      timeout-minutes: 1
+      run: |
+        $ServiceName = 'fluentbit'
+        $arrService = Get-Service -Name $ServiceName
+
+        while ($arrService.Status -ne 'Running')
+        {
+          Start-Service $ServiceName
+          write-host $arrService.status
+          write-host 'Service starting'
+          Start-Sleep -seconds 10
+          $arrService.Refresh()
+          if ($arrService.Status -eq 'Running')
+          {
+              Write-Host 'Service is now Running'
+          }
+        }
       shell: pwsh
