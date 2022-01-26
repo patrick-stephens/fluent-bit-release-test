@@ -117,7 +117,7 @@ jobs:
       timeout-minutes: 2
       run: |
         Start-Service fluent-bit
-        Start-Sleep seconds 60
+        Start-Sleep -s 60
         $service = Get-Service -Name $ServiceName
         if( $service.Status -ne 'Running' ) {
           Write-Host 'Service is not Running'
