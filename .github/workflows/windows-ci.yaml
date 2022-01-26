@@ -50,7 +50,10 @@ jobs:
     - name: Run executable installer
       timeout-minutes: 5
       # Silent install accepting all defaults
-      run: fluent-bit-installer.exe /S /D=C:\fluent-bit
+      run: |
+        $startExe = New-Object System.Diagnostics.ProcessStartInfo -Args "fluent-bit-installer.exe"
+        $startExe.verbs
+        Start-Process -NoNewWindow -FilePath "fluent-bit-installer.exe" -ArgumentList "/S", "/D=C:\fluent-bit"
       shell: pwsh
 
     - name: Verify installation
