@@ -118,7 +118,7 @@ jobs:
       run: |
         Start-Service fluent-bit
         Start-Sleep -s 60
-        $service = Get-Service -Name $ServiceName
+        $service = Get-Service -Name fluent-bit
         if( $service.Status -ne 'Running' ) {
           Write-Host 'Service is not Running'
           exit 1
