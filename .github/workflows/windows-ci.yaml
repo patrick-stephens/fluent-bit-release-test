@@ -111,22 +111,15 @@ jobs:
       run: Get-Service -Name fluent-bit
       shell: pwsh
 
-    - name: Start the service if not running
-      timeout-minutes: 1
+    - name: Start the service and check it runs
+      timeout-minutes: 2
       run: |
-        $ServiceName = 'fluent-bit'
-        $arrService = Get-Service -Name $ServiceName
-
-        while ($arrService.Status -ne 'Running')
-        {
-          Start-Service $ServiceName
-          write-host $arrService.status
-          write-host 'Service starting'
-          Start-Sleep -seconds 10
-          $arrService.Refresh()
-          if ($arrService.Status -eq 'Running')
-          {
-              Write-Host 'Service is now Running'
-          }
+        Start-Service fluent-bit
+        Start-Sleep seconds 60
+        $service = Get-Service -Name $ServiceName
+        if( $service.Status -ne 'Running' ) {
+          Write-Host 'Service is not Running'
+          exit 1
         }
+        Write-Host 'Service is Running'
       shell: pwsh
