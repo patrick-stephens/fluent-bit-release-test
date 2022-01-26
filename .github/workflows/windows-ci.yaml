@@ -24,8 +24,8 @@ jobs:
         Invoke-WebRequest -Uri $Env:ZIP_SOURCE -OutFile fluent-bit.zip
       shell: pwsh
       env:
-        EXE_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.exe
-        ZIP_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.11-win64.zip
+        EXE_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.12-win64.exe
+        ZIP_SOURCE: https://fluentbit.io/releases/1.8/td-agent-bit-1.8.12-win64.zip
 
     - name: Extract zip locally to test
       # Will end up in .\fluent-bit\td-agent-bit-<version>-win64\
@@ -46,7 +46,7 @@ jobs:
         Get-Process | Where-Object {$_.HasExited}
         echo "Fluent Bit exited correctly"
       shell: pwsh
-      working-directory: fluent-bit\td-agent-bit-1.8.11-win64
+      working-directory: fluent-bit\td-agent-bit-1.8.12-win64
 
     - name: Run zip version with default config
       # Default config prior to 1.9 is for Linux so will fail
@@ -62,7 +62,7 @@ jobs:
         Get-Process | Where-Object {$_.HasExited}
         echo "Fluent Bit exited correctly"
       shell: pwsh
-      working-directory: fluent-bit\td-agent-bit-1.8.11-win64
+      working-directory: fluent-bit\td-agent-bit-1.8.12-win64
 
     - name: Run executable installer
       timeout-minutes: 5
