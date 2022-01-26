@@ -58,11 +58,11 @@ jobs:
 
     - name: Verify installation
       timeout-minutes: 1
-      run:
-        Test-Path -Path "C:\fluent-bit\bin\fluent-bit.exe" | Should -Be $true
-        Test-Path -Path "C:\fluent-bit\conf\fluent-bit.conf" | Should -Be $true
-        Test-Path -Path "C:\fluent-bit\conf\parsers.conf" | Should -Be $true
-        Test-Path -Path "C:\fluent-bit\conf\plugins.conf" | Should -Be $true
+      run: |
+        Test-Path -Path "C:\fluent-bit\bin\fluent-bit.exe"
+        Test-Path -Path "C:\fluent-bit\conf\fluent-bit.conf"
+        Test-Path -Path "C:\fluent-bit\conf\parsers.conf"
+        Test-Path -Path "C:\fluent-bit\conf\plugins.conf"
       shell: pwsh
 
     - name: Patch config
@@ -106,11 +106,13 @@ jobs:
 
     - name: Create a Fluent Bit service
       timeout-minutes: 1
-      run: New-Service fluent-bit -BinaryPathName "C:\fluent-bit\bin\fluent-bit.exe -c C:\fluent-bit\conf\fluent-bit.conf" -StartupType Manual
+      run: |
+        New-Service fluent-bit -BinaryPathName "C:\fluent-bit\bin\fluent-bit.exe -c C:\fluent-bit\conf\fluent-bit.conf" -StartupType Manual
       shell: pwsh
 
     - name: Verify we have the new service
-      run: Get-Service -Name fluent-bit
+      run: |
+        Get-Service -Name fluent-bit
       shell: pwsh
 
     - name: Start the service and check it runs
