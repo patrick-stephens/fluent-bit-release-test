@@ -101,7 +101,7 @@ jobs:
           Name = "fluentbit"
           BinaryPathName = '"C:\fluent-bit\bin\fluent-bit.exe -c C:\fluent-bit\conf\fluent-bit.conf -w C:\fluent-bit"'
           DisplayName = "Fluent Bit"
-          StartupType = "AutomaticDelayedStart"
+          StartupType = "Automatic"
           Description = "Fluent Bit log forwarding service."
         }
         New-Service @params
