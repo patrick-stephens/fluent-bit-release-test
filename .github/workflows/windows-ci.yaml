@@ -31,7 +31,7 @@ jobs:
     - name: Run zip version with simple config
       timeout-minutes: 1
       run: |
-        $fluentbit=Start-Process -PassThru -NoNewWindow -FilePath "bin\fluent-bit.exe" -ArgumentList "-i", "dummy", "-o", "stdout"
+        $fluentbit=Start-Process -PassThru -NoNewWindow -FilePath "C:\temp\bin\fluent-bit.exe" -ArgumentList "-i", "dummy", "-o", "stdout"
         Start-Sleep -s 15
         if ($fluentbit.HasExited) {
           echo "Fluent Bit exited prematurely"
@@ -44,7 +44,7 @@ jobs:
     - name: Run zip version with default config
       timeout-minutes: 1
       run: |
-        $fluentbit=Start-Process -PassThru -NoNewWindow -FilePath "bin\fluent-bit.exe"
+        $fluentbit=Start-Process -PassThru -NoNewWindow -FilePath "C:\temp\bin\fluent-bit.exe"
         Start-Sleep -s 15
         if ($fluentbit.HasExited) {
           echo "Fluent Bit exited prematurely"
