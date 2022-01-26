@@ -1,5 +1,5 @@
 ---
-name: Release from staging
+name: Windows CI
 
 # This is only expected to be invoked on-demand by a specific user.
 on:
