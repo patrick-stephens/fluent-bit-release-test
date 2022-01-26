@@ -98,7 +98,7 @@ jobs:
       timeout-minutes: 1
       run: |
         $params = @{
-          Name = "fluentbit"
+          Name = "fluent-bit"
           BinaryPathName = '"C:\fluent-bit\bin\fluent-bit.exe -c C:\fluent-bit\conf\fluent-bit.conf -w C:\fluent-bit"'
           DisplayName = "Fluent Bit"
           StartupType = "Automatic"
@@ -108,13 +108,13 @@ jobs:
       shell: pwsh
 
     - name: Verify we have the new service
-      run: Get-CimInstance -ClassName Win32_Service -Filter "Name='fluentbit'"
+      run: Get-Service -Name fluent-bit
       shell: pwsh
 
     - name: Start the service if not running
       timeout-minutes: 1
       run: |
-        $ServiceName = 'fluentbit'
+        $ServiceName = 'fluent-bit'
         $arrService = Get-Service -Name $ServiceName
 
         while ($arrService.Status -ne 'Running')
