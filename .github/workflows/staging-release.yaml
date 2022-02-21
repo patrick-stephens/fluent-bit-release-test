@@ -38,7 +38,7 @@ jobs:
         STAGING_VERSION=$(cat latest-version.txt)
         [[ "$STAGING_VERSION" != "$RELEASE_VERSION" ]] && echo "Latest version mismatch: $STAGING_VERSION != $RELEASE_VERSION" && exit 1
         # Must end in something that exits 0
-        # echo "Successfully confirmed version is as expected: $STAGING_VERSION"
+        echo "Successfully confirmed version is as expected: $STAGING_VERSION"
       shell: bash
       env:
         AWS_URL: https:/fluentbit-staging.s3.amazonaws.com
