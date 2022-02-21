@@ -41,5 +41,5 @@ jobs:
         # echo "Successfully confirmed version is as expected: $STAGING_VERSION"
       shell: bash
       env:
-        AWS_URL: https:/fluent-bit-staging.s3.amazonaws.com
+        AWS_URL: https:/fluentbit-staging.s3.amazonaws.com
         RELEASE_VERSION: ${{ github.event.inputs.version }}
